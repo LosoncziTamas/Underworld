@@ -8,6 +8,7 @@ public class CharacterController : MonoBehaviour
     [SerializeField] private Animator _animator;
     [SerializeField] private PlayerInput _playerInput;
     [SerializeField] private float _rotationSpeed;
+    [SerializeField] private float _movementSpeed;
     
     private Transform _transform;
 
@@ -21,18 +22,20 @@ public class CharacterController : MonoBehaviour
         var moving = false;
         if (_playerInput.Left)
         {
-            _transform.Rotate(Vector3.up, -_rotationSpeed * Time.deltaTime);
+            _transform.Rotate(Vector3.up, -_rotationSpeed * Time.deltaTime, Space.Self);
         }
         if (_playerInput.Right)
         {
-            _transform.Rotate(Vector3.up, _rotationSpeed * Time.deltaTime);
+            _transform.Rotate(Vector3.up, _rotationSpeed * Time.deltaTime, Space.Self);
         }
         if (_playerInput.Forward)
         {
+            transform.Translate(Vector3.forward * Time.deltaTime * _movementSpeed, Space.Self);
             moving = true;
         }
         if (_playerInput.Backward)
         {
+            transform.Translate(Vector3.back * Time.deltaTime * _movementSpeed, Space.Self);
             moving = true;
         }
         _animator.SetBool(Walking, moving);
