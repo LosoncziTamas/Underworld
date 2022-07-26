@@ -4,12 +4,14 @@ using UnityEngine;
 public class CharacterController : MonoBehaviour
 {
     private static readonly int Walking = Animator.StringToHash("IsWalking");
-    private static readonly int Turning = Animator.StringToHash("Turning");
+    private static readonly int Turn = Animator.StringToHash("Turn");
 
     [SerializeField] private Animator _animator;
     [SerializeField] private PlayerInput _playerInput;
     [SerializeField] private float _rotationSpeed;
     [SerializeField] private float _movementSpeed;
+
+    private float _rotationVelocity = 0;
     
     private Transform _transform;
 
@@ -21,16 +23,15 @@ public class CharacterController : MonoBehaviour
     private void Update()
     {
         var moving = false;
-        var rotation = 0;
         if (_playerInput.Left)
         {
-            rotation = -1;
-            _transform.Rotate(Vector3.up, -_rotationSpeed * Time.deltaTime, Space.Self);
+            _rotationVelocity -= Time.deltaTime * _rotationSpeed;
+            //_transform.Rotate(Vector3.up, -_rotationSpeed * Time.deltaTime, Space.Self);
         }
         if (_playerInput.Right)
         {
-            rotation = 1;
-            _transform.Rotate(Vector3.up, _rotationSpeed * Time.deltaTime, Space.Self);
+            _rotationVelocity += Time.deltaTime * _rotationSpeed;
+            // _transform.Rotate(Vector3.up, _rotationSpeed * Time.deltaTime, Space.Self);
         }
         if (_playerInput.Forward)
         {
@@ -42,8 +43,9 @@ public class CharacterController : MonoBehaviour
             transform.Translate(Vector3.back * Time.deltaTime * _movementSpeed, Space.Self);
             moving = true;
         }
-        _animator.SetBool(Walking, moving);
-        _animator.SetInteger(Turning, rotation);
 
+        _rotationVelocity = Mathf.Clamp(_rotationVelocity, -1.0f, 1.0f);
+        _animator.SetFloat(Turn, _rotationVelocity);
+        _animator.SetBool(Walking, moving);
     }
 }
