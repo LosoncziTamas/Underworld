@@ -1,20 +1,18 @@
-using System;
 using UnityEngine;
 
 public class CharacterController : MonoBehaviour
 {
-    private static readonly int Walking = Animator.StringToHash("IsWalking");
-    private static readonly int Turn = Animator.StringToHash("Turn");
+    private static readonly int X = Animator.StringToHash("X");
+    private static readonly int Y = Animator.StringToHash("Y");
 
     [SerializeField] private Animator _animator;
     [SerializeField] private PlayerInput _playerInput;
-    [SerializeField] private float _rotationSpeed;
+    [SerializeField] private float _maxVelocityMagnitude;
     [SerializeField] private float _movementSpeed;
-
-    private float _rotationVelocity = 0;
     
     private Transform _transform;
-
+    private Vector3 _velocity;
+    
     private void Start()
     {
         _transform = gameObject.transform;
@@ -22,30 +20,31 @@ public class CharacterController : MonoBehaviour
 
     private void Update()
     {
-        var moving = false;
+        var x = 0f;
+        var y = 0f;
         if (_playerInput.Left)
         {
-            _rotationVelocity -= Time.deltaTime * _rotationSpeed;
-            //_transform.Rotate(Vector3.up, -_rotationSpeed * Time.deltaTime, Space.Self);
+            _velocity += Vector3.left;
+            x = -1.0f;
         }
         if (_playerInput.Right)
         {
-            _rotationVelocity += Time.deltaTime * _rotationSpeed;
-            // _transform.Rotate(Vector3.up, _rotationSpeed * Time.deltaTime, Space.Self);
+            _velocity += Vector3.right;
+            x = 1.0f;
         }
         if (_playerInput.Forward)
         {
-            transform.Translate(Vector3.forward * Time.deltaTime * _movementSpeed, Space.Self);
-            moving = true;
+            _velocity += Vector3.forward;
+            y = 1.0f;
         }
         if (_playerInput.Backward)
         {
-            transform.Translate(Vector3.back * Time.deltaTime * _movementSpeed, Space.Self);
-            moving = true;
+            _velocity += Vector3.back;
+            y = -1.0f;
         }
-
-        _rotationVelocity = Mathf.Clamp(_rotationVelocity, -1.0f, 1.0f);
-        _animator.SetFloat(Turn, _rotationVelocity);
-        _animator.SetBool(Walking, moving);
+        _velocity = Vector3.ClampMagnitude(_velocity, _maxVelocityMagnitude);
+        // _transform.Translate(_velocity * Time.deltaTime * _movementSpeed, Space.Self);
+        //_animator.SetFloat(X, x);
+        //_animator.SetFloat(Y, y);
     }
 }
