@@ -2,14 +2,12 @@ using UnityEngine;
 
 public class CharacterController : MonoBehaviour
 {
-    private static readonly int X = Animator.StringToHash("X");
-    private static readonly int Y = Animator.StringToHash("Y");
+    private static readonly int Horizontal = Animator.StringToHash("Horizontal");
+    private static readonly int Vertical = Animator.StringToHash("Vertical");
 
     [SerializeField] private Animator _animator;
-    [SerializeField] private PlayerInput _playerInput;
-    [SerializeField] private float _maxVelocityMagnitude;
-    [SerializeField] private float _movementSpeed;
-    
+
+    [SerializeField] private float _speed;
     private Transform _transform;
     private Vector3 _velocity;
     
@@ -18,33 +16,17 @@ public class CharacterController : MonoBehaviour
         _transform = gameObject.transform;
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
-        var x = 0f;
-        var y = 0f;
-        if (_playerInput.Left)
-        {
-            _velocity += Vector3.left;
-            x = -1.0f;
-        }
-        if (_playerInput.Right)
-        {
-            _velocity += Vector3.right;
-            x = 1.0f;
-        }
-        if (_playerInput.Forward)
-        {
-            _velocity += Vector3.forward;
-            y = 1.0f;
-        }
-        if (_playerInput.Backward)
-        {
-            _velocity += Vector3.back;
-            y = -1.0f;
-        }
-        _velocity = Vector3.ClampMagnitude(_velocity, _maxVelocityMagnitude);
-        // _transform.Translate(_velocity * Time.deltaTime * _movementSpeed, Space.Self);
-        //_animator.SetFloat(X, x);
-        //_animator.SetFloat(Y, y);
+        var horizontal = Input.GetAxis("Horizontal");
+        var vertical = Input.GetAxis("Vertical");
+        DebugGui.Instance.PrintLine($"horizontal {horizontal} vertical {vertical}");
+
+        var offset = _transform.forward * vertical + _transform.right * horizontal;
+        offset.Normalize();
+        
+        _transform.Translate(offset * 0.04f);
+        _animator.SetFloat(Horizontal, horizontal);
+        _animator.SetFloat(Vertical, vertical);
     }
 }

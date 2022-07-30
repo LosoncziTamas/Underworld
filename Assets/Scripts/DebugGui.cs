@@ -18,6 +18,10 @@ public class DebugGui : MonoBehaviour
 
     public void PrintLine(string line)
     {
+        if (StringBuilder.Length > 0)
+        {
+            StringBuilder.Clear();
+        }
         StringBuilder.Append(line).Append("\n");
     }
 
@@ -29,13 +33,5 @@ public class DebugGui : MonoBehaviour
     private void RenderDebugWindow(int id)
     {
         GUILayout.Label(StringBuilder.ToString(), _guiStyle);
-    }
-
-    private void Update()
-    {
-        if (StringBuilder.Length > 0)
-        {
-            StringBuilder.Clear();
-        }
     }
 }
